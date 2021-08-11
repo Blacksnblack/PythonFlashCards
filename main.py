@@ -7,7 +7,7 @@ cardIndex = 0
 fbIndex = 0
 cards = []
 card, fileLabel = None, None
-filename = "../vocab/verbs.txt" #  "../vocab/test.txt"
+filename = ""
 horizontalRule = "-" * 40
 
 
@@ -33,8 +33,7 @@ def formatText(text):
                     pos -= 1
             text = text[:pos+20] + "\n" + text[pos+20:]
         pos += len(item) + 1
-
-    # dynamic vertical center
+    # dynamic vertical center (better way to do this?)
     num = text.count("\n")
     if num <= 2:
         return "\n" * 3 + text
@@ -78,10 +77,10 @@ def previousCard():
     global cardIndex, cards, fullCard
     if cardIndex > 0:
         cardIndex -= 1
-    if fullCard:
-        doFullCard()
-    else:
-        updateCard()
+        if fullCard:
+            doFullCard()
+        else:
+            updateCard()
 
 
 def flipCard():
@@ -98,7 +97,6 @@ def generateCards():
     resetVars()
     with open(filename, "r", encoding="utf8") as f:
         data = f.read().split("\n\n")
-        # print(data)
         for item in data:
             cardData = item.split("~")
             if len(cardData) > 1:
@@ -112,9 +110,10 @@ def openFile():
         title="Select A File",
         filetype=(("Txt", "*.txt"), ("All Files", "*.*")),
     )
-    generateCards()
-    updateCard()
-    fileLabel.config(text=filename.split("/")[-1])
+    if filename and len(filename) > 1:
+        generateCards()
+        updateCard()
+        fileLabel.config(text=filename.split("/")[-1])
 
 
 WIDTH = 400
@@ -152,8 +151,9 @@ entryFrame = tk.Frame(mainFrame, width=WIDTH, height=HEIGHT - 150)
 entryFrame.grid(row=2, column=0)
 entryFrame.columnconfigure(0, weight=10)
 entryFrame.grid_propagate(False)
-
-card = tk.Label(entryFrame, text="私は猫です。\n あなたも猫ですか？", font=("Arial", 20))  # , width=42, height=10)
+# 私は猫です。\n あなたも猫ですか？
+openingMessage = "To begin, click the \n\"Open File\" button above and \nselect a file formatted for \nflashcards"
+card = tk.Label(entryFrame, text=openingMessage, font=("Arial", 20))  # , width=42, height=10)
 card.grid(row=0, column=0, columnspan=3)
 
 # generateCards()
