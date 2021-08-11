@@ -1,12 +1,23 @@
 import tkinter as tk
+from tkinter import filedialog
+
 
 fullCard = False
 cardIndex = 0
 fbIndex = 0
 cards = []
-card = None
+card, fileLabel = None, None
 filename = "../vocab/verbs.txt" #  "../vocab/test.txt"
 horizontalRule = "-" * 40
+
+
+def resetVars():
+    global fullCard, cardIndex, fbIndex, cards
+    fullCard = False
+    cardIndex = 0
+    fbIndex = 0
+    cards = []
+
 
 def formatText(text):
     # Word Wrap
@@ -84,6 +95,7 @@ def flipCard():
 
 
 def generateCards():
+    resetVars()
     with open(filename, "r", encoding="utf8") as f:
         data = f.read().split("\n\n")
         # print(data)
@@ -91,6 +103,18 @@ def generateCards():
             cardData = item.split("~")
             if len(cardData) > 1:
                 cards.append(cardData)
+
+
+def openFile():
+    global filename, fileLabel
+    filename = filedialog.askopenfilename(
+        initialdir= ".",
+        title="Select A File",
+        filetype=(("Txt", "*.txt"), ("All Files", "*.*")),
+    )
+    generateCards()
+    updateCard()
+    fileLabel.config(text=filename.split("/")[-1])
 
 
 WIDTH = 400
@@ -103,29 +127,41 @@ root.resizable(False, False)
 mainFrame = tk.Frame(root)
 mainFrame.grid()
 
+# Very Top
+veryTopFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
+veryTopFrame.grid(row=0, column=0)
+veryTopFrame.columnconfigure(0, weight=10)
+
+fileLabel = tk.Label(veryTopFrame, text="No File", padx=50)
+fileLabel.grid(row=0, column=0)
+
+fileButton = tk.Button(veryTopFrame, text="Open File", padx=50, command=openFile)
+fileButton.grid(row=0, column=1)
+
+
 # Top
 topFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
-topFrame.grid(row=0, column=0)
+topFrame.grid(row=1, column=0)
 topFrame.columnconfigure(0, weight=10)
 
 optionButton = tk.Button(topFrame, text="Show Both Sides", command=showFullCard)
 optionButton.grid()
 
 # Center
-entryFrame = tk.Frame(mainFrame, width=WIDTH, height=HEIGHT - 100)
-entryFrame.grid(row=1, column=0)
+entryFrame = tk.Frame(mainFrame, width=WIDTH, height=HEIGHT - 150)
+entryFrame.grid(row=2, column=0)
 entryFrame.columnconfigure(0, weight=10)
 entryFrame.grid_propagate(False)
 
 card = tk.Label(entryFrame, text="私は猫です。\n あなたも猫ですか？", font=("Arial", 20))  # , width=42, height=10)
 card.grid(row=0, column=0, columnspan=3)
 
-generateCards()
-updateCard()
+# generateCards()
+# updateCard()
 
 # Bottom
 bottomFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
-bottomFrame.grid(row=2, column=0)
+bottomFrame.grid(row=3, column=0)
 bottomFrame.columnconfigure(0, weight=10)
 
 back_button = tk.Button(bottomFrame, text="<--", command=previousCard, padx=15)
