@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-
+from PyQt5.QtWidgets import QApplication
 
 fullCard = False
 cardIndex = 0
@@ -8,8 +8,26 @@ fbIndex = 0
 cards = []
 card, fileLabel = None, None
 filename = ""
+# Constants
 horizontalRule = "-" * 40
+WIDTH = 400
+HEIGHT = 400
+openingMessage = "To begin, click the \n\"Open File\" button above and \nselect a file formatted for " \
+                 "\nflashcards " \
+                 "\n\n私は猫です。\n あなたも猫ですか？"
 
+
+def center(topLevel):
+    topLevel.update_idletasks()
+
+    app = QApplication([])
+    screen_width = app.desktop().screenGeometry().width()
+    screen_height = app.desktop().screenGeometry().height()
+
+    x = int(screen_width/2 - WIDTH/2)
+    y = int(screen_height/2 - HEIGHT/2)
+
+    topLevel.geometry(f"+{x}+{y}")
 
 def resetVars():
     global fullCard, cardIndex, fbIndex, cards
@@ -51,6 +69,8 @@ def doFullCard():
 
 def showFullCard():
     global card, cards, cardIndex, fullCard
+    if len(cards) == 0:
+        return
     fullCard = not fullCard
     if fullCard:
         doFullCard()
@@ -84,7 +104,9 @@ def previousCard():
 
 
 def flipCard():
-    global fbIndex, fullCard
+    global fbIndex, fullCard, cards
+    if len(cards) == 0:
+        return
     if fullCard:
         return
     fbIndex += 1
@@ -116,44 +138,43 @@ def openFile():
         fileLabel.config(text=filename.split("/")[-1])
 
 
-WIDTH = 400
-HEIGHT = 400
-
 root = tk.Tk()
+root.iconbitmap(default='transparent.ico')
 root.geometry(f"{WIDTH}x{HEIGHT}")
+root.title("Python FlashCard Application")
 root.resizable(False, False)
+center(root)
 
 mainFrame = tk.Frame(root)
 mainFrame.grid()
 
-# Very Top
-veryTopFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
-veryTopFrame.grid(row=0, column=0)
-veryTopFrame.columnconfigure(0, weight=10)
 
-fileLabel = tk.Label(veryTopFrame, text="No File", padx=50)
+# Very Top
+topFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
+topFrame.grid(row=0, column=0)
+topFrame.columnconfigure(0, weight=10)
+
+fileLabel = tk.Label(topFrame, text="No File", padx=50)
 fileLabel.grid(row=0, column=0)
 
-fileButton = tk.Button(veryTopFrame, text="Open File", padx=50, command=openFile)
+fileButton = tk.Button(topFrame, text="Open File", padx=50, command=openFile)
 fileButton.grid(row=0, column=1)
 
 
 # Top
-topFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
-topFrame.grid(row=1, column=0)
-topFrame.columnconfigure(0, weight=10)
+secondFrame = tk.Frame(mainFrame, width=WIDTH, height=50)
+secondFrame.grid(row=1, column=0)
+secondFrame.columnconfigure(0, weight=10)
 
-optionButton = tk.Button(topFrame, text="Show Both Sides", command=showFullCard)
+optionButton = tk.Button(secondFrame, text="Show Both Sides", command=showFullCard)
 optionButton.grid()
 
 # Center
-entryFrame = tk.Frame(mainFrame, width=WIDTH, height=HEIGHT - 150)
-entryFrame.grid(row=2, column=0)
-entryFrame.columnconfigure(0, weight=10)
-entryFrame.grid_propagate(False)
-# 私は猫です。\n あなたも猫ですか？
-openingMessage = "To begin, click the \n\"Open File\" button above and \nselect a file formatted for \nflashcards"
-card = tk.Label(entryFrame, text=openingMessage, font=("Arial", 20))  # , width=42, height=10)
+thirdFrame = tk.Frame(mainFrame, width=WIDTH, height=HEIGHT - 150)
+thirdFrame.grid(row=2, column=0)
+thirdFrame.columnconfigure(0, weight=10)
+thirdFrame.grid_propagate(False)
+card = tk.Label(thirdFrame, text=openingMessage, font=("Arial", 20))  # , width=42, height=10)
 card.grid(row=0, column=0, columnspan=3)
 
 # generateCards()
